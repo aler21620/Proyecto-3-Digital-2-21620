@@ -164,6 +164,8 @@ void loop() {
   }
 
   if (digitalRead(boton2) == LOW) {
+    //Envío de un entero a ESP32 para que el microcontrolador sepa que debe enviar la última lectura
+    Serial2.println('2');
     guardar("Sensor.txt");
     delay(250);
   }

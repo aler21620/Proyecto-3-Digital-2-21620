@@ -1,17 +1,32 @@
+//*****************************************************************************
+// Universidad del Valle de Guatemala
+// BE3015 - Electrónica Digital 2
+// Proyecto 3 - María Alejandra Rodríguez
+// Sensor de temperatura I2C - Comunicación con TIVA C y Pantalla SPI
+//*****************************************************************************
+//*****************************************************************************
+// Librerías
+//*****************************************************************************
+#include <Arduino.h>
+#include "esp_adc_cal.h"
 #include <Adafruit_NeoPixel.h> 
 
+//*****************************************************************************
+//  Definición de pines
+//*****************************************************************************
+#define SensorTemp 35 //Sensor del proyecto 
+#define RX_2 16 //Para comunicación serial con TIVA
+#define TX_2 17 //Para comunicación serial con TIVA
+#define PIN  23 //Para la conexión del Neopíxel
+#define NUMPIXELS  24 //Número de píxeles del neopíxel 
 
-#define PIN  23
-#define NUMPIXELS  24
+Adafruit_NeoPixel pixels(NUMPIXELS,PIN, NEO_GRB); //Funciones de la librería 
 
-Adafruit_NeoPixel pixels(NUMPIXELS,PIN, NEO_GRB);
-
-#define PIN2  15
-#define NUMPIXELS2  16
-
-Adafruit_NeoPixel pixels2(NUMPIXELS2,PIN2, NEO_GRB);
-
-
+//*****************************************************************************
+// Prototipos de función
+//*****************************************************************************
+uint32_t readADC_Cal(int ADC_Raw);
+void temperatura(void);
 void setPixel(int Pixel, byte red, byte green, byte blue);
 void Strobe(byte red, byte green, byte blue, int StrobeCount, int FlashDelay, int EndPause);
 void showStrip(void);
@@ -19,11 +34,23 @@ void colorWipe(byte red, byte green, byte blue, int SpeedDelay);
 void setAll(byte red, byte green, byte blue);
 void BouncingColoredBalls(int BallCount, byte colors[][3]);
 
-//***********************************************************************************************
+//*****************************************************************************
+// Variables Globales
+//*****************************************************************************
+int Sensor_Raw = 0;
+float voltaje =0.0; 
+float Sensor1 = 0.0;
+float temp;
+int senal;
+
+//*****************************************************************************
+// Configuración
+//*****************************************************************************
 void setup() {
-  // put your setup code here, to run once:
+  //Comunicación UART0 con la computadora Serial (0)
   Serial.begin(115200);
-  Serial.println("Hello, ESP32!");
+  Serial.println("Se configuró Serial 0");
+  Serial2.begin(115200, SERIAL_8N1, RX_2, TX_2); //Establecer comunicación serial con TIVA
 
   pixels.begin(); 
   pixels.clear();
@@ -31,26 +58,42 @@ void setup() {
 
   pixels.setPixelColor(0, pixels.Color(255,100,150));
   pixels.show();
-
-  pixels2.begin(); 
-  pixels2.clear();
-  pixels2.setBrightness(255);
-
-  pixels2.setPixelColor(0, pixels.Color(255,100,150));
-  pixels2.show();
-
 }
 
+//*****************************************************************************
+// Loop
+//*****************************************************************************
 void loop() {
- byte colors[3][3] = { {0xff, 0,0}, 
+  // Recibir datos de la TIVA C para colocar en la LCD
+  if (Serial2.available()) {
+    senal = Serial2.read();
+  }
+
+  if(senal == '1') {
+    temperatura();
+    temp = Sensor1;
+    Serial2.println(temp);
+    Serial.print("Dato enviado a TIVA C: ");
+    Serial.print(temp);
+    Serial.print("°C 🌡️ \n");
+    senal = 0; 
+  }
+
+  if(senal == '2') {
+    //Agregar función de neopíxel 
+    senal = 0; 
+  }
+  
+  //Funciones para el neopíxel 
+  byte colors[3][3] = { {0xff, 0,0}, 
                         {0xff, 0xff, 0xff}, 
                         {0   , 0   , 0xff} };
 
   BouncingColoredBalls(3, colors);
   colorWipe(0x00,0xff,0x00, 50);
   colorWipe(0x00,0x00,0x00, 50);
-   // put your main code here, to run repeatedly:
-  /*delay(100); // this speeds up the simulation
+
+  /*delay(100); 
   
   pixels.setBrightness(255);
 
@@ -71,6 +114,22 @@ void loop() {
 */
 }
 
+//*****************************************************************************
+// Funciones
+//*****************************************************************************
+uint32_t readADC_Cal(int ADC_Raw) {
+  esp_adc_cal_characteristics_t adc_chars;
+  esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 1100, &adc_chars);
+  return (esp_adc_cal_raw_to_voltage(ADC_Raw, &adc_chars));
+}
+
+void temperatura(void) {
+// Leer el pin LM35_Sensor1 ADC
+  Sensor_Raw = analogRead(SensorTemp);
+  // Calibrar ADC y tomar el voltaje en mV
+  voltaje = readADC_Cal(Sensor_Raw);
+  Sensor1 = ((voltaje/4095)*3.25)/0.01; // De ser necesario se multiplica por un factor para que lea correctamente la temperatura
+}
 
 void Strobe(byte red, byte green, byte blue, int StrobeCount, int FlashDelay, int EndPause){
   for(int j = 0; j < StrobeCount; j++) {
