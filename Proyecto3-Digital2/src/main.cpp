@@ -101,9 +101,6 @@ void loop() {
 //*****************************************************************************
 void temperatura(void) {
   temp = temperature.readTemperatureC();
-  Serial.print("🌡️ Temperatura leída = ");
-  Serial.print(temp);
-  Serial.println(" °C 🌡️");
   delay(250);
 }
 
