@@ -31,6 +31,7 @@ void encenderTodos(void);
 void apagarTodos(void);
 void enviando (void);
 void color_TEMP(void); 
+void guardando(void);
 
 //*****************************************************************************
 // Variables Globales
