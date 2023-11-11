@@ -25,8 +25,7 @@ Adafruit_NeoPixel pixels(NUMPIXELS,PIN, NEO_GRB); //Funciones de la librería
 //*****************************************************************************
 // Prototipos de función
 //*****************************************************************************
-uint32_t readADC_Cal(int ADC_Raw);
-//void temperatura(void);
+void temperatura(void);
 void setPixel(int Pixel, byte red, byte green, byte blue);
 void Strobe(byte red, byte green, byte blue, int StrobeCount, int FlashDelay, int EndPause);
 void showStrip(void);
@@ -37,9 +36,6 @@ void BouncingColoredBalls(int BallCount, byte colors[][3]);
 //*****************************************************************************
 // Variables Globales
 //*****************************************************************************
-/*int Sensor_Raw = 0;
-float voltaje =0.0; 
-float Sensor1 = 0.0;*/
 float temp;
 int senal;
 Generic_LM75 temperature;
@@ -67,11 +63,7 @@ void setup() {
 // Loop
 //*****************************************************************************
 void loop() {
-  Serial.print("Temperature = ");
-  temp = temperature.readTemperatureC();
-  Serial.print(temp);
-  Serial.println(" C");
-  delay(250);
+  temperatura();
   // Recibir datos de la TIVA C para colocar en la LCD
   if (Serial2.available()) {
     senal = Serial2.read();
@@ -124,13 +116,13 @@ void loop() {
 //*****************************************************************************
 // Funciones
 //*****************************************************************************
-/*void temperatura(void) {
-// Leer el pin LM35_Sensor1 ADC
-  Sensor_Raw = analogRead(SensorTemp);
-  // Calibrar ADC y tomar el voltaje en mV
-  voltaje = readADC_Cal(Sensor_Raw);
-  Sensor1 = ((voltaje/4095)*3.25)/0.01; // De ser necesario se multiplica por un factor para que lea correctamente la temperatura
-}*/
+void temperatura(void) {
+  temp = temperature.readTemperatureC();
+  Serial.print("Temperature = ");
+  Serial.print(temp);
+  Serial.println(" C");
+  delay(250);
+}
 
 void Strobe(byte red, byte green, byte blue, int StrobeCount, int FlashDelay, int EndPause){
   for(int j = 0; j < StrobeCount; j++) {
