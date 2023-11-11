@@ -15,7 +15,6 @@
 //*****************************************************************************
 //  Definición de pines
 //*****************************************************************************
-#define SensorTemp 35 //Sensor del proyecto 
 #define RX_2 16 //Para comunicación serial con TIVA
 #define TX_2 17 //Para comunicación serial con TIVA
 #define PIN  23 //Para la conexión del Neopíxel
@@ -27,7 +26,7 @@ Adafruit_NeoPixel pixels(NUMPIXELS,PIN, NEO_GRB); //Funciones de la librería
 // Prototipos de función
 //*****************************************************************************
 uint32_t readADC_Cal(int ADC_Raw);
-void temperatura(void);
+//void temperatura(void);
 void setPixel(int Pixel, byte red, byte green, byte blue);
 void Strobe(byte red, byte green, byte blue, int StrobeCount, int FlashDelay, int EndPause);
 void showStrip(void);
@@ -38,9 +37,9 @@ void BouncingColoredBalls(int BallCount, byte colors[][3]);
 //*****************************************************************************
 // Variables Globales
 //*****************************************************************************
-int Sensor_Raw = 0;
+/*int Sensor_Raw = 0;
 float voltaje =0.0; 
-float Sensor1 = 0.0;
+float Sensor1 = 0.0;*/
 float temp;
 int senal;
 Generic_LM75 temperature;
@@ -79,7 +78,7 @@ void loop() {
 
   if(senal == '1') {
     //temperatura();
-    temp = Sensor1;
+    //temp = Sensor1;
     Serial2.println(temp);
     Serial.print("Dato enviado a TIVA C: ");
     Serial.print(temp);
@@ -131,13 +130,13 @@ uint32_t readADC_Cal(int ADC_Raw) {
   return (esp_adc_cal_raw_to_voltage(ADC_Raw, &adc_chars));
 }
 
-void temperatura(void) {
+/*void temperatura(void) {
 // Leer el pin LM35_Sensor1 ADC
   Sensor_Raw = analogRead(SensorTemp);
   // Calibrar ADC y tomar el voltaje en mV
   voltaje = readADC_Cal(Sensor_Raw);
   Sensor1 = ((voltaje/4095)*3.25)/0.01; // De ser necesario se multiplica por un factor para que lea correctamente la temperatura
-}
+}*/
 
 void Strobe(byte red, byte green, byte blue, int StrobeCount, int FlashDelay, int EndPause){
   for(int j = 0; j < StrobeCount; j++) {
