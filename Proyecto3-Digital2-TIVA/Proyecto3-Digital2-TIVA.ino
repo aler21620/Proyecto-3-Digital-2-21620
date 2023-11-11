@@ -87,7 +87,6 @@ void setup() {
   pinMode(boton1, INPUT_PULLUP); //Configuración del botón como entrada
   pinMode(boton2, INPUT_PULLUP); //Configuración del botón como entrada
 
-
   // Inicializa la comunicación con la tarjeta SD
   if (!SD.begin(CS)) {
     //Indica que algo pasó y no se inicializó correctamente
@@ -128,7 +127,7 @@ void loop() {
   //Condiciones para sumar o restar con los botones en la variable contador
   if (data == LOW) {
     //Envío de un entero a ESP32 para que el microcontrolador sepa que debe enviar la última lectura
-    Serial2.println('1');
+    Serial2.println('T');
     if(Serial2.available() > 0) {
       temp = Serial2.parseFloat();
       Serial.print("🌡Tu temperatura actual es: ");
