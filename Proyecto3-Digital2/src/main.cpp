@@ -41,9 +41,9 @@ Generic_LM75 temperature;
 uint8_t rojo = 255;
 uint8_t verde = 0;
 uint8_t azul = 0;
-const float TEMP_LOW = 24.0; //Valor mínimo de temperatura para considerarlo en estado bajo 
-const float TEMP_MEDIUM = 25.0; //Valor medio de temperatura para considerarlo en estado medio
-const float TEMP_HIGH = 26.0; //Valor medio de temperatura para considerarlo en estado alto 
+const float TEMP_LOW = 25.0; //Valor mínimo de temperatura para considerarlo en estado bajo 
+const float TEMP_MEDIUM = 27.0; //Valor medio de temperatura para considerarlo en estado medio
+const float TEMP_HIGH = 30.0; //Valor medio de temperatura para considerarlo en estado alto 
 
 //*****************************************************************************
 // Configuración
@@ -89,7 +89,7 @@ void loop() {
   }
 
   if (senal == 'G') {
-
+    guardando(); 
     // Agregar función de neopíxel
     senal = 0;
   }
