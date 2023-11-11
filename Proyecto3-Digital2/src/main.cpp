@@ -73,7 +73,7 @@ void loop() {
     senal = Serial2.read();
   }
 
-  if (senal == '1') {
+  if (senal == 'T') {
     temperatura();
     Serial2.println(temp);
     enviando();
@@ -89,6 +89,7 @@ void loop() {
   }
 
   if (senal == '2') {
+
     // Agregar función de neopíxel
     senal = 0;
   }
@@ -127,6 +128,7 @@ void enviando () {
 }
 
 void color_TEMP () {
+  temperatura();
   if(temp < TEMP_LOW) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
     circle.setPixelColor(i, circle.Color(10, 100, 179)); // Apagar el LED actual
@@ -143,4 +145,11 @@ void color_TEMP () {
     }
     circle.show(); // Mostrar los cambios en los LEDs
   }
+}
+
+void guardando () { 
+  for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
+    circle.setPixelColor(i, circle.Color(120, 120, 120)); // Establecer color verde en el LED actual
+  }
+  circle.show(); // Mostrar los cambios en los LEDs
 }
