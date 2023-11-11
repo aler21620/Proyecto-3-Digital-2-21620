@@ -68,9 +68,9 @@ void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int
 //*****************************************************************************
 String nombre; //Nombre del archivo que abre o crea
 float temp; //Para almacenar el valor de temperatura del sensor del ESP32
-const float TEMP_LOW = 24.0; 
-const float TEMP_MEDIUM = 25.0; 
-const float TEMP_HIGH = 26.0;
+const float TEMP_LOW = 25.0; 
+const float TEMP_MEDIUM = 27.0; 
+const float TEMP_HIGH = 30.0;
 
 //*****************************************************************************
 // Configuración
