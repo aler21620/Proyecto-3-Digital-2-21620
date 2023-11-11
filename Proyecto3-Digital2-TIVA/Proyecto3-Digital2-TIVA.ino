@@ -86,7 +86,7 @@ void setup() {
 
   pinMode(boton1, INPUT_PULLUP); //Configuración del botón como entrada
   pinMode(boton2, INPUT_PULLUP); //Configuración del botón como entrada
-  pinMode(buzz, OUTPUT); 
+
 
   // Inicializa la comunicación con la tarjeta SD
   if (!SD.begin(CS)) {

@@ -27,8 +27,10 @@ Adafruit_NeoPixel circle(NUM_CIRCLE_LEDS, CIRCLE_PIN, NEO_GRB + NEO_KHZ800);
 // Prototipos de función
 //*****************************************************************************
 void temperatura(void);
-void encenderTodos();
-void apagarTodos();
+void encenderTodos(void);
+void apagarTodos(void);
+void enviando (void);
+void color_TEMP(void); 
 
 //*****************************************************************************
 // Variables Globales
@@ -39,6 +41,9 @@ Generic_LM75 temperature;
 uint8_t rojo = 255;
 uint8_t verde = 0;
 uint8_t azul = 0;
+const float TEMP_LOW = 24.0; //Valor mínimo de temperatura para considerarlo en estado bajo 
+const float TEMP_MEDIUM = 25.0; //Valor medio de temperatura para considerarlo en estado medio
+const float TEMP_HIGH = 26.0; //Valor medio de temperatura para considerarlo en estado alto 
 
 //*****************************************************************************
 // Configuración
@@ -131,9 +136,15 @@ void loop() {
   if (senal == '1') {
     temperatura();
     Serial2.println(temp);
+    enviando();
     Serial.print("Dato enviado a TIVA C: ");
     Serial.print(temp);
     Serial.print("°C 🌡️ \n");
+    delay(500);
+    apagarTodos(); 
+    delay(500);
+    color_TEMP();
+    delay(100);
     senal = 0;
   }
 
@@ -166,4 +177,30 @@ void apagarTodos() {
     circle.setPixelColor(i, circle.Color(0, 0, 0)); // Apagar el LED actual
   }
   circle.show(); // Mostrar los cambios en los LEDs
+}
+
+void enviando () {
+  for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
+    circle.setPixelColor(i, circle.Color(0, 255, 0)); // Establecer color verde en el LED actual
+  }
+  circle.show(); // Mostrar los cambios en los LEDs
+}
+
+void color_TEMP () {
+  if(temp < TEMP_LOW) {
+    for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
+    circle.setPixelColor(i, circle.Color(10, 100, 179)); // Apagar el LED actual
+    }
+    circle.show(); // Mostrar los cambios en los LEDs
+  } else if (temp >= TEMP_LOW && temp < TEMP_MEDIUM) {
+    for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
+    circle.setPixelColor(i, circle.Color(0, 255, 0)); // Apagar el LED actual
+    }
+    circle.show(); // Mostrar los cambios en los LEDs
+  } else if (temp >= TEMP_MEDIUM && temp <= TEMP_HIGH) {
+    for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
+    circle.setPixelColor(i, circle.Color(255, 0, 0)); // Apagar el LED actual
+    }
+    circle.show(); // Mostrar los cambios en los LEDs
+  }
 }
