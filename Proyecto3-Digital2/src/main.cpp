@@ -10,6 +10,7 @@
 #include <Arduino.h>
 #include "esp_adc_cal.h"
 #include <Adafruit_NeoPixel.h> 
+#include <Temperature_LM75_Derived.h> 
 
 //*****************************************************************************
 //  Definición de pines
@@ -42,6 +43,7 @@ float voltaje =0.0;
 float Sensor1 = 0.0;
 float temp;
 int senal;
+Generic_LM75 temperature;
 
 //*****************************************************************************
 // Configuración
@@ -58,19 +60,25 @@ void setup() {
 
   pixels.setPixelColor(0, pixels.Color(255,100,150));
   pixels.show();
+  Wire.begin();
 }
 
 //*****************************************************************************
 // Loop
 //*****************************************************************************
 void loop() {
+  Serial.print("Temperature = ");
+  Serial.print(temperature.readTemperatureC());
+  Serial.println(" C");
+
+  //delay(250);
   // Recibir datos de la TIVA C para colocar en la LCD
   if (Serial2.available()) {
     senal = Serial2.read();
   }
 
   if(senal == '1') {
-    temperatura();
+    //temperatura();
     temp = Sensor1;
     Serial2.println(temp);
     Serial.print("Dato enviado a TIVA C: ");
