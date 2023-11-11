@@ -58,76 +58,16 @@ void setup() {
   circle.begin();
   circle.clear();
   circle.setBrightness(BRIGHT);
-
-  /*rojo = 0;
-  verde = 255;
-  azul = 0;
-  circle.clear();
-
-  for (int i = NUM_CIRCLE_LEDS - 1; i >= 0; i--) {
-    circle.setPixelColor(i, rojo, verde, azul);
-    circle.show();
-    delay(500);
-    circle.clear();
-  }*/
+  encenderTodos(); 
+  delay(500);
+  apagarTodos(); 
+  delay(500);
 }
 
 //*****************************************************************************
 // Loop
 //*****************************************************************************
 void loop() {
-  //Mostrar en el Neopíxel que está esperando instrucciones
-  encenderTodos(); 
-  delay(500);
-  apagarTodos(); 
-  delay(500);
-  /*for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
-    circle.setPixelColor(i, circle.Color(0, 255, 0)); // Establecer color verde en el LED actual
-    circle.show(); // Mostrar el cambio en el LED
-
-    delay(100); // Esperar un poco
-
-    circle.setPixelColor(i, circle.Color(0, 0, 0)); // Apagar el LED actual
-    circle.show(); // Mostrar el cambio en el LED
-  }*/
-  rojo = 255;
-  verde = 0;
-  azul = 0;
-
-  /*for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
-    circle.setPixelColor(i, rojo, verde, azul);
-    circle.show();
-    delay(40);
-    azul = azul + 12;
-    rojo = rojo - 12;
-  }
-
-  rojo = 0;
-  verde = 255;
-  azul = 0;
-  circle.clear();
-
-  for (int i = NUM_CIRCLE_LEDS - 1; i >= 0; i--) {
-    circle.setPixelColor(i, rojo, verde, azul);
-    circle.show();
-    delay(50);
-  }
-
-  // And again
-  verde = 0;
-  azul = 255;
-  circle.clear();
-
-  for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
-    circle.setPixelColor(i, rojo, verde, azul);
-    circle.show();
-    delay(30);
-    verde += 8;
-  }
-
-  // Clear down the circle LEDs and start again
-  circle.clear();
-  circle.show();*/
   // Recibir datos de la TIVA C para colocar en la LCD
   if (Serial2.available()) {
     senal = Serial2.read();
