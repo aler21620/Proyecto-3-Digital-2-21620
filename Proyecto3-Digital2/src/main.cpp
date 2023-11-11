@@ -88,7 +88,7 @@ void loop() {
     senal = 0;
   }
 
-  if (senal == '2') {
+  if (senal == 'G') {
 
     // Agregar función de neopíxel
     senal = 0;
