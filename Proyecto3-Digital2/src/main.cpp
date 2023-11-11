@@ -8,9 +8,9 @@
 // Librerías
 //*****************************************************************************
 #include <Arduino.h>
-#include "esp_adc_cal.h"
 #include <Adafruit_NeoPixel.h> 
 #include <Temperature_LM75_Derived.h> 
+#include <Wire.h>
 
 //*****************************************************************************
 //  Definición de pines
@@ -50,6 +50,7 @@ Generic_LM75 temperature;
 void setup() {
   //Comunicación UART0 con la computadora Serial (0)
   Serial.begin(115200);
+  Wire.begin();
   Serial.println("Se configuró Serial 0");
   Serial2.begin(115200, SERIAL_8N1, RX_2, TX_2); //Establecer comunicación serial con TIVA
 
@@ -59,7 +60,7 @@ void setup() {
 
   pixels.setPixelColor(0, pixels.Color(255,100,150));
   pixels.show();
-  Wire.begin();
+  
 }
 
 //*****************************************************************************
@@ -67,18 +68,17 @@ void setup() {
 //*****************************************************************************
 void loop() {
   Serial.print("Temperature = ");
-  Serial.print(temperature.readTemperatureC());
+  temp = temperature.readTemperatureC();
+  Serial.print(temp);
   Serial.println(" C");
-
-  //delay(250);
+  delay(250);
   // Recibir datos de la TIVA C para colocar en la LCD
   if (Serial2.available()) {
     senal = Serial2.read();
   }
 
   if(senal == '1') {
-    //temperatura();
-    //temp = Sensor1;
+    temp = temperature.readTemperatureC();  // Asignar la temperatura leída a 'temp'
     Serial2.println(temp);
     Serial.print("Dato enviado a TIVA C: ");
     Serial.print(temp);
@@ -91,7 +91,7 @@ void loop() {
     senal = 0; 
   }
   
-  //Funciones para el neopíxel 
+  /* //Funciones para el neopíxel 
   byte colors[3][3] = { {0xff, 0,0}, 
                         {0xff, 0xff, 0xff}, 
                         {0   , 0   , 0xff} };
@@ -124,12 +124,6 @@ void loop() {
 //*****************************************************************************
 // Funciones
 //*****************************************************************************
-uint32_t readADC_Cal(int ADC_Raw) {
-  esp_adc_cal_characteristics_t adc_chars;
-  esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 1100, &adc_chars);
-  return (esp_adc_cal_raw_to_voltage(ADC_Raw, &adc_chars));
-}
-
 /*void temperatura(void) {
 // Leer el pin LM35_Sensor1 ADC
   Sensor_Raw = analogRead(SensorTemp);
