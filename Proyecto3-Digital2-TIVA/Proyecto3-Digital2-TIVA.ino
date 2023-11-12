@@ -153,6 +153,7 @@ void loop() {
       String alta = "  ALTA  "; 
       LCD_Print(alta, 30, 160, 2, 0x1105, 0xD7FD); 
     }
+    temp = 0.0; 
   }
 
   if (digitalRead(boton2) == LOW) {

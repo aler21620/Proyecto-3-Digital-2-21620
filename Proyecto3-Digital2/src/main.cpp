@@ -9,6 +9,9 @@
 //*****************************************************************************
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+  #include <avr/power.h>
+#endif
 #include <Temperature_LM75_Derived.h>
 #include <Wire.h>
 
@@ -19,9 +22,9 @@
 #define TX_2 17       // Para comunicación serial con TIVA
 #define CIRCLE_PIN 25 // Para la conexión del Neopíxel
 #define NUM_CIRCLE_LEDS 24 //Número de pines del Neopíxel 
-#define BRIGHT 30   // Brillo del Neopíxel
+#define BRIGHT 50   // Brillo del Neopíxel
 
-Adafruit_NeoPixel circle(NUM_CIRCLE_LEDS, CIRCLE_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel circle = Adafruit_NeoPixel(NUM_CIRCLE_LEDS, CIRCLE_PIN, NEO_GRB + NEO_KHZ800);
 
 //*****************************************************************************
 // Prototipos de función
@@ -56,9 +59,14 @@ void setup() {
   Serial.println("Se configuró Serial 0");
   Serial2.begin(115200, SERIAL_8N1, RX_2, TX_2); // Establecer comunicación serial con TIVA
 
+  //#if defined (__AVR_ATtiny85__)
+    //if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
+  //#endif
+
   circle.begin();
   circle.clear();
   circle.setBrightness(BRIGHT);
+  
 }
 
 //*****************************************************************************
@@ -76,22 +84,24 @@ void loop() {
 
   if (senal == '1') {
     temperatura();
+    enviando();
+    delay(3000);
     Serial2.println(temp);
-    //enviando();
     Serial.print("Dato enviado a TIVA C: ");
     Serial.print(temp);
     Serial.print("°C 🌡️ \n");
-    //apagarTodos(); 
-    //delay(500);
-    //color_TEMP();
+    apagarTodos(); 
+    delay(500);
+    color_TEMP();
+    delay(3000);
     senal = 0;
   }
 
   if (senal == '2') {
     Serial.print("Señal recibida de TIVA C: ");
     Serial.print("Datos guardados en SD \n");
-    //guardando(); 
-    // Agregar función de neopíxel
+    guardando(); 
+    delay(3000);
     senal = 0;
   }
 }
@@ -120,8 +130,7 @@ void apagarTodos() {
 
 void enviando () {
   for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
-    circle.setPixelColor(i, circle.Color(150, 10, 150)); // Establecer color verde en el LED actual
-    delay(500);
+    circle.setPixelColor(i, circle.Color(208, 115, 150)); // Establecer color verde en el LED actual
   }
   circle.show(); // Mostrar los cambios en los LEDs
 }
@@ -131,19 +140,16 @@ void color_TEMP () {
   if(temp < TEMP_LOW) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
     circle.setPixelColor(i, circle.Color(10, 10, 179)); // Apagar el LED actual
-    delay(500);
     }
     circle.show(); // Mostrar los cambios en los LEDs
   } else if (temp >= TEMP_LOW && temp < TEMP_MEDIUM) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
     circle.setPixelColor(i, circle.Color(0, 255, 0)); // Apagar el LED actual
-    delay(500);
     }
     circle.show(); // Mostrar los cambios en los LEDs
   } else if (temp >= TEMP_MEDIUM && temp <= TEMP_HIGH) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
     circle.setPixelColor(i, circle.Color(255, 0, 0)); // Apagar el LED actual
-    delay(500);
     }
     circle.show(); // Mostrar los cambios en los LEDs
   }
@@ -151,7 +157,7 @@ void color_TEMP () {
 
 void guardando () { 
   for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
-    circle.setPixelColor(i, circle.Color(120, 120, 120)); // Establecer color verde en el LED actual
+    circle.setPixelColor(i, circle.Color(200, 120, 120)); // Establecer color verde en el LED actual
   }
   circle.show(); // Mostrar los cambios en los LEDs
 }
