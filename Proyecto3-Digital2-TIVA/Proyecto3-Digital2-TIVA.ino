@@ -106,19 +106,8 @@ void setup() {
   LCD_Clear(0x00);
 
   LCD_Bitmap(0, 0, 320, 240, fondo); 
-  //FillRect(0,0, 320, 240,  0x37FC);
-  //FillRect(0, 60, 320, 220, 0xF7BD);   
-  //FillRect(0,180, 320, 220,  0x37FC);   
-  //String text1 = "TEMPERATURA";
-  //LCD_Print(text1, 70, 8, 2, 0x1105, 0x37FC); 
-  //String text2 = "ACTUAL";
-  //LCD_Print(text2, 115, 30, 2, 0x1105, 0x37FC); 
-  //String text3 = "ALEJANDRA";
-  //LCD_Print(text3, 90, 200, 2, 0x1105, 0xD7FD);
-  String text4 = "ALEJANDRA RODRIGUEZ";
-  LCD_Print(text4, 8, 210, 2, 0x1105, 0xD7FD); 
-  //LCD_Bitmap(35, 70, 35, 80, termometro); 
-  //LCD_Bitmap(250, 70, 35, 80, termometro); 
+  String text1 = "ALEJANDRA RODRIGUEZ";
+  LCD_Print(text1, 8, 210, 2, 0x1105, 0xD7FD); 
 }
 
 //*****************************************************************************
@@ -151,7 +140,7 @@ void loop() {
     String cent = String(centena);
 
     String tempe = cent + deci + "." + dec + uni; 
-    LCD_Print(tempe, 120, 100, 2, 0x1105, 0xD7FD); 
+      LCD_Print(tempe, 55, 120, 2, 0x1105, 0xD7FD);
 
     if(temp < TEMP_LOW) {
       String baja = "  BAJA  "; 
