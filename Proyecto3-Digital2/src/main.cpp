@@ -120,7 +120,8 @@ void apagarTodos() {
 
 void enviando () {
   for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
-    circle.setPixelColor(i, circle.Color(0, 255, 0)); // Establecer color verde en el LED actual
+    circle.setPixelColor(i, circle.Color(150, 10, 150)); // Establecer color verde en el LED actual
+    delay(500);
   }
   circle.show(); // Mostrar los cambios en los LEDs
 }
