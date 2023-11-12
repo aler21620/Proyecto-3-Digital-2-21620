@@ -59,16 +59,16 @@ void setup() {
   circle.begin();
   circle.clear();
   circle.setBrightness(BRIGHT);
-  encenderTodos(); 
-  delay(500);
-  apagarTodos(); 
-  delay(500);
 }
 
 //*****************************************************************************
 // Loop
 //*****************************************************************************
 void loop() {
+  encenderTodos(); 
+  delay(500);
+  apagarTodos(); 
+  delay(500);
   // Recibir datos de la TIVA C para colocar en la LCD
   if (Serial2.available()) {
     senal = Serial2.read();
@@ -131,16 +131,19 @@ void color_TEMP () {
   if(temp < TEMP_LOW) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
     circle.setPixelColor(i, circle.Color(10, 100, 179)); // Apagar el LED actual
+    delay(500);
     }
     circle.show(); // Mostrar los cambios en los LEDs
   } else if (temp >= TEMP_LOW && temp < TEMP_MEDIUM) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
     circle.setPixelColor(i, circle.Color(0, 255, 0)); // Apagar el LED actual
+    delay(500);
     }
     circle.show(); // Mostrar los cambios en los LEDs
   } else if (temp >= TEMP_MEDIUM && temp <= TEMP_HIGH) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
     circle.setPixelColor(i, circle.Color(255, 0, 0)); // Apagar el LED actual
+    delay(500);
     }
     circle.show(); // Mostrar los cambios en los LEDs
   }
@@ -149,6 +152,7 @@ void color_TEMP () {
 void guardando () { 
   for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
     circle.setPixelColor(i, circle.Color(120, 120, 120)); // Establecer color verde en el LED actual
+    delay(10);
   }
   circle.show(); // Mostrar los cambios en los LEDs
 }
