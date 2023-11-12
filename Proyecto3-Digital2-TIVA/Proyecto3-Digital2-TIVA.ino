@@ -125,6 +125,7 @@ void loop() {
       Serial.print("🌡Tu temperatura actual es: ");
       Serial.print(temp);
       Serial.print("  °C 🌡\n");
+      delay(500); 
     }
 
     int temperatura = temp * 100;
