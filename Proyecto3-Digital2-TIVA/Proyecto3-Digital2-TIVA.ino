@@ -121,6 +121,7 @@ void loop() {
     //Envío de un entero a ESP32 para que el microcontrolador sepa que debe enviar la última lectura
     Serial2.println('1');
     if(Serial2.available() > 0) {
+      delay(4000);
       temp = Serial2.parseFloat();
       Serial.print("🌡Tu temperatura actual es: ");
       Serial.print(temp);
