@@ -42,9 +42,6 @@ void guardando(void);
 float temp;
 int senal;
 Generic_LM75 temperature;
-uint8_t rojo = 255;
-uint8_t verde = 0;
-uint8_t azul = 0;
 const float TEMP_LOW = 25.0; //Valor mínimo de temperatura para considerarlo en estado bajo 
 const float TEMP_MEDIUM = 27.0; //Valor medio de temperatura para considerarlo en estado medio
 const float TEMP_HIGH = 30.0; //Valor medio de temperatura para considerarlo en estado alto 
