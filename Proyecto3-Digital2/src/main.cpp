@@ -56,14 +56,9 @@ void setup() {
   Serial.println("Se configuró Serial 0");
   Serial2.begin(115200, SERIAL_8N1, RX_2, TX_2); // Establecer comunicación serial con TIVA
 
-  //#if defined (__AVR_ATtiny85__)
-    //if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
-  //#endif
-
   circle.begin();
   circle.clear();
   circle.setBrightness(BRIGHT);
-  
 }
 
 //*****************************************************************************
