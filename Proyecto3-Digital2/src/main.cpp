@@ -81,15 +81,15 @@ void loop() {
     Serial.print("Dato enviado a TIVA C: ");
     Serial.print(temp);
     Serial.print("°C 🌡️ \n");
-    delay(500);
     apagarTodos(); 
     delay(500);
     color_TEMP();
-    delay(100);
     senal = 0;
   }
 
   if (senal == 'G') {
+    Serial.print("Señal recibida de TIVA C: ");
+    Serial.print("Datos guardados en SD \n");
     guardando(); 
     // Agregar función de neopíxel
     senal = 0;
@@ -130,7 +130,7 @@ void color_TEMP () {
   temperatura();
   if(temp < TEMP_LOW) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
-    circle.setPixelColor(i, circle.Color(10, 100, 179)); // Apagar el LED actual
+    circle.setPixelColor(i, circle.Color(10, 10, 179)); // Apagar el LED actual
     delay(500);
     }
     circle.show(); // Mostrar los cambios en los LEDs
@@ -152,7 +152,7 @@ void color_TEMP () {
 void guardando () { 
   for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
     circle.setPixelColor(i, circle.Color(120, 120, 120)); // Establecer color verde en el LED actual
-    delay(10);
+    delay(500);
   }
   circle.show(); // Mostrar los cambios en los LEDs
 }
