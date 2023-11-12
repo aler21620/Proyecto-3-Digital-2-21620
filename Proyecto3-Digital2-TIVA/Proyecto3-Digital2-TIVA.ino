@@ -63,6 +63,8 @@ void FillRect(unsigned int x, unsigned int y, unsigned int w, unsigned int h, un
 void LCD_Print(String text, int x, int y, int fontSize, int color, int background);
 void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]);
 
+extern uint8_t fondo[]; 
+
 //*****************************************************************************
 // Variables Globales
 //*****************************************************************************
@@ -103,19 +105,20 @@ void setup() {
   LCD_Init();
   LCD_Clear(0x00);
 
-  FillRect(0,0, 320, 240,  0x37FC);
-  FillRect(0, 60, 320, 220, 0xF7BD);   
-  FillRect(0,180, 320, 220,  0x37FC);   
-  String text1 = "TEMPERATURA";
-  LCD_Print(text1, 70, 8, 2, 0x1105, 0x37FC); 
-  String text2 = "ACTUAL";
-  LCD_Print(text2, 115, 30, 2, 0x1105, 0x37FC); 
-  String text3 = "ALEJANDRA";
-  LCD_Print(text3, 90, 190, 2, 0x1105, 0x37FC);
-  String text4 = "RODRIGUEZ";
-  LCD_Print(text4, 90, 212, 2, 0x1105, 0x37FC); 
-  LCD_Bitmap(35, 70, 35, 80, termometro); 
-  LCD_Bitmap(250, 70, 35, 80, termometro); 
+  LCD_Bitmap(0, 0, 320, 240, fondo); 
+  //FillRect(0,0, 320, 240,  0x37FC);
+  //FillRect(0, 60, 320, 220, 0xF7BD);   
+  //FillRect(0,180, 320, 220,  0x37FC);   
+  //String text1 = "TEMPERATURA";
+  //LCD_Print(text1, 70, 8, 2, 0x1105, 0x37FC); 
+  //String text2 = "ACTUAL";
+  //LCD_Print(text2, 115, 30, 2, 0x1105, 0x37FC); 
+  //String text3 = "ALEJANDRA";
+  //LCD_Print(text3, 90, 200, 2, 0x1105, 0xD7FD);
+  String text4 = "ALEJANDRA RODRIGUEZ";
+  LCD_Print(text4, 8, 210, 2, 0x1105, 0xD7FD); 
+  //LCD_Bitmap(35, 70, 35, 80, termometro); 
+  //LCD_Bitmap(250, 70, 35, 80, termometro); 
 }
 
 //*****************************************************************************
@@ -148,24 +151,24 @@ void loop() {
     String cent = String(centena);
 
     String tempe = cent + deci + "." + dec + uni; 
-    LCD_Print(tempe, 120, 100, 2, 0x1105, 0xF7BD); 
+    LCD_Print(tempe, 120, 100, 2, 0x1105, 0xD7FD); 
 
     if(temp < TEMP_LOW) {
       String baja = "  BAJA  "; 
-      LCD_Print(baja, 100, 130, 2, 0x1105, 0xF7BD); 
+      LCD_Print(baja, 30, 160, 2, 0x1105, 0xD7FD);
     } else if (temp >= TEMP_LOW && temp < TEMP_MEDIUM) {
       String ambiente = "AMBIENTE"; 
-      LCD_Print(ambiente, 100, 130, 2, 0x1105, 0xF7BD); 
+      LCD_Print(ambiente, 300, 160, 2, 0x1105, 0xD7FD); 
     } else if (temp >= TEMP_MEDIUM && temp <= TEMP_HIGH) {
       String alta = "  ALTA  "; 
-      LCD_Print(alta, 100, 130, 2, 0x1105, 0xF7BD); 
+      LCD_Print(alta, 30, 160, 2, 0x1105, 0xD7FD); 
     }
   }
 
   if (digitalRead(boton2) == LOW) {
     //Envío de un entero a ESP32 para que el microcontrolador sepa que debe enviar la última lectura
     Serial2.println('G');
-    guardar("Sensor.txt");
+    guardar("I2C.txt");
     delay(250);
   }
   delay(100);
@@ -176,7 +179,7 @@ void loop() {
 //*****************************************************************************
 //Función para guardar el dato en la memoria SD
 void guardar(String nombre) {
-  File archivo = SD.open("Sensor.txt", FILE_WRITE);
+  File archivo = SD.open("I2C.txt", FILE_WRITE);
 
   if (archivo) {
     archivo.print("🌡Tu temperatura actual es: ");
