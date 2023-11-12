@@ -74,7 +74,7 @@ void loop() {
     senal = Serial2.read();
   }
 
-  if (senal == 'T') {
+  if (senal == '1') {
     temperatura();
     Serial2.println(temp);
     //enviando();
@@ -87,7 +87,7 @@ void loop() {
     senal = 0;
   }
 
-  if (senal == 'G') {
+  if (senal == '2') {
     Serial.print("Señal recibida de TIVA C: ");
     Serial.print("Datos guardados en SD \n");
     //guardando(); 
