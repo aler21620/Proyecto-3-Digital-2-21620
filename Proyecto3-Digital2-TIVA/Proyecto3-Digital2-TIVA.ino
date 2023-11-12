@@ -1,7 +1,8 @@
 //*****************************************************************************
 // Universidad del Valle de Guatemala
 // BE3015 - Electrónica Digital 2
-// Proyecto 2 - María Alejandra Rodríguez
+// Proyecto 3 - María Alejandra Rodríguez
+// Sensor de temperatura I2C - Comunicación con TIVA C y Pantalla SPI
 //*****************************************************************************
 //*****************************************************************************
 // Librerías
@@ -63,6 +64,7 @@ void FillRect(unsigned int x, unsigned int y, unsigned int w, unsigned int h, un
 void LCD_Print(String text, int x, int y, int fontSize, int color, int background);
 void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]);
 
+//Función/Variable para llamarla desde el archivo de gráficos, de esta manera se utiliza la memoria flash
 extern uint8_t fondo[]; 
 
 //*****************************************************************************
@@ -70,6 +72,7 @@ extern uint8_t fondo[];
 //*****************************************************************************
 String nombre; //Nombre del archivo que abre o crea
 float temp; //Para almacenar el valor de temperatura del sensor del ESP32
+//Los límites de temperatura pueden variar dependiendo de la aplicación o el lugar donde se encuentre 
 const float TEMP_LOW = 25.0; 
 const float TEMP_MEDIUM = 27.0; 
 const float TEMP_HIGH = 30.0;
@@ -78,14 +81,17 @@ const float TEMP_HIGH = 30.0;
 // Configuración
 //*****************************************************************************
 void setup() {
+  //Iniciar Módulo SPI
   SPI.setModule(0);
-   
+
+  //Iniciar comunicación serial con la TIVA C
   Serial.begin(115200); //Velocidad del monitor serial
   Serial.println("Se configuró Serial 0");
  
   //Comunicación UART2 con el ESP32, Serial (2)
   Serial2.begin(115200); //Velocidad de la comunicación 
 
+  //Configuración de los botones incluidos en la TIVA
   pinMode(boton1, INPUT_PULLUP); //Configuración del botón como entrada
   pinMode(boton2, INPUT_PULLUP); //Configuración del botón como entrada
 
@@ -100,11 +106,13 @@ void setup() {
 
   //Inicialización pantalla SPI
   SysCtlClockSet(SYSCTL_SYSDIV_2_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
-
+  
   Serial.println("Inicio");
+  //Inicia la pantalla SPI
   LCD_Init();
   LCD_Clear(0x00);
 
+  //Colocar fondo del proyecto 
   LCD_Bitmap(0, 0, 320, 240, fondo); 
   String text1 = "ALEJANDRA RODRIGUEZ";
   LCD_Print(text1, 8, 210, 2, 0x1105, 0xD7FD); 
@@ -121,14 +129,18 @@ void loop() {
     //Envío de un entero a ESP32 para que el microcontrolador sepa que debe enviar la última lectura
     Serial2.println('1');
     if(Serial2.available() > 0) {
+      //Delay para esperar a que termine de leer el sensor en el ESP y el neopixel indique que lo envió 
       delay(4000);
+      //Leer el buffer del monitor serial y obtener los datos en tipo float
       temp = Serial2.parseFloat();
+      //Imprimir la temperatura que recibe del ESP para verificar que sea la misma
       Serial.print("🌡Tu temperatura actual es: ");
       Serial.print(temp);
       Serial.print("  °C 🌡\n");
       delay(500); 
     }
 
+    //Separar el float de temperatura, para poder convertirlo en string 
     int temperatura = temp * 100;
     //Se obtiene cada número por separado
     int unidad = (temperatura/1) %10; 
@@ -141,25 +153,28 @@ void loop() {
     String deci = String(decimal); 
     String cent = String(centena);
 
+    //Hacer string de temperatura e imprimir en pantalla SPI
     String tempe = cent + deci + "." + dec + uni; 
-      LCD_Print(tempe, 55, 120, 2, 0x1105, 0xD7FD);
+    LCD_Print(tempe, 55, 120, 2, 0x1105, 0xD7FD);
 
+    //Evaluar los límites de temperatura 
     if(temp < TEMP_LOW) {
-      String baja = "  BAJA  "; 
-      LCD_Print(baja, 30, 160, 2, 0x1105, 0xD7FD);
+      String limite = "  BAJA  "; 
+      LCD_Print(limite, 30, 160, 2, 0x1105, 0xD7FD);
     } else if (temp >= TEMP_LOW && temp < TEMP_MEDIUM) {
-      String ambiente = "AMBIENTE"; 
-      LCD_Print(ambiente, 300, 160, 2, 0x1105, 0xD7FD); 
+      String limite = "AMBIENTE"; 
+      LCD_Print(limite, 30, 160, 2, 0x1105, 0xD7FD); 
     } else if (temp >= TEMP_MEDIUM && temp <= TEMP_HIGH) {
-      String alta = "  ALTA  "; 
-      LCD_Print(alta, 30, 160, 2, 0x1105, 0xD7FD); 
+      String limite = "  ALTA  "; 
+      LCD_Print(limite, 30, 160, 2, 0x1105, 0xD7FD); 
     }
-    temp = 0.0; 
   }
 
+  //Instrucciones para el segundo botón, para guardar los datos 
   if (digitalRead(boton2) == LOW) {
-    //Envío de un entero a ESP32 para que el microcontrolador sepa que debe enviar la última lectura
+    //Envío de un entero a ESP32 para que sepa de que color poner el neopíxel 
     Serial2.println('2');
+    //Guardar los datos en la SD 
     guardar("I2C.txt");
     delay(250);
   }
@@ -178,6 +193,23 @@ void guardar(String nombre) {
     archivo.print(temp);
     archivo.print("  °C 🌡");
     archivo.println();
+    //Límites de temperatura, para evaluar el valor y guardar en que estado está la temperatura 
+    if(temp < TEMP_LOW) {
+      String limite = "  Baja  "; 
+      archivo.print("Esta es temperatura: "); 
+      archivo.print(limite);
+      archivo.println(); 
+    } else if (temp >= TEMP_LOW && temp < TEMP_MEDIUM) {
+      String limite = "Ambiente"; 
+      archivo.print("Esta es temperatura: "); 
+      archivo.print(limite);
+      archivo.println(); 
+    } else if (temp >= TEMP_MEDIUM && temp <= TEMP_HIGH) {
+      String limite = "  Alta  "; 
+      archivo.print("Esta es temperatura: "); 
+      archivo.print(limite);
+      archivo.println(); 
+    }
     archivo.close();
     Serial.println("Datos de temperatura registrados correctamente en la SD");
   } else {
