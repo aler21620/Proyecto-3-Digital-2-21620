@@ -23,6 +23,7 @@
 #define CIRCLE_PIN 25 // Para la conexión del Neopíxel
 #define NUM_CIRCLE_LEDS 24 //Número de pines del Neopíxel 
 #define BRIGHT 50   // Brillo del Neopíxel
+#define LM75_ADDRESS 0x48 // Dirección I2C del sensor LM75
 
 //Creación del objeto del Neopíxel para poder hacer diferentes diseños con colores
 Adafruit_NeoPixel circle = Adafruit_NeoPixel(NUM_CIRCLE_LEDS, CIRCLE_PIN, NEO_GRB + NEO_KHZ800); 
@@ -30,7 +31,7 @@ Adafruit_NeoPixel circle = Adafruit_NeoPixel(NUM_CIRCLE_LEDS, CIRCLE_PIN, NEO_GR
 //*****************************************************************************
 // Prototipos de función
 //*****************************************************************************
-void temperatura(void); //Para leer temperatura con sensor I2C
+float readTemperature(); //Para leer temperatura con sensor I2C
 void encenderTodos(void); //Para encender todos los leds en estado de espera
 void apagarTodos(void); //Función para apagar el neopíxel 
 void enviando (void); //Para indicar que está enviando el dato leído de temperatura
@@ -53,7 +54,7 @@ const float TEMP_HIGH = 30.0; //Valor medio de temperatura para considerarlo en 
 void setup() {
   // Comunicación UART0 con la computadora Serial (0)
   Serial.begin(115200);
-  Wire.begin(); //Para el funcionamiento de I2C
+  Wire.begin(21, 22); //Para el funcionamiento de I2C
   Serial.println("Se configuró Serial 0");
   Serial2.begin(115200, SERIAL_8N1, RX_2, TX_2); // Establecer comunicación serial con TIVA
 
@@ -79,12 +80,12 @@ void loop() {
 
   //Verificar si la señal es para leer temperatura 
   if (senal == '1') {
-    temperatura(); //Leer temperatura en el sensor
+    float temperature = readTemperature(); //Leer temperatura del sensor
     enviando(); //Estado de envío de datos en el neopíxel 
     delay(3000);
-    Serial2.println(temp); //Enviar dato a TIVA
+    Serial2.println(temperature); //Enviar dato a TIVA
     Serial.print("Dato enviado a TIVA C: "); 
-    Serial.print(temp);
+    Serial.print(temperature);
     Serial.print("°C 🌡️ \n");
     apagarTodos(); //Apagar el Neopíxel 
     delay(500);
@@ -107,9 +108,16 @@ void loop() {
 // Funciones
 //*****************************************************************************
 //Función para leer la temperatura con el sensor I2C
-void temperatura(void) {
-  temp = temperature.readTemperatureC();
-  delay(250);
+float readTemperature() {
+  Wire.beginTransmission(LM75_ADDRESS); //Leer la temperatura a través de I2C y Wire
+  Wire.write(0x00); // Registro de lectura de temperatura (0x00 para lectura)
+  Wire.endTransmission();
+
+  Wire.requestFrom(LM75_ADDRESS, 2); // Se solicitan 2 bytes de datos de temperatura
+  int16_t tempData = (Wire.read() << 8) | Wire.read(); // Combinar los bytes recibidos
+
+  float temperature = tempData / 256.0; // Convertir datos a grados Celsius
+  return temperature;
 }
 
 //Función para encender todos los leds del Neopíxel para el estado de espera
@@ -138,18 +146,18 @@ void enviando () {
 
 //Función para verificar los límites de temperatura y encender los leds de acuerdo al valor 
 void color_TEMP () {
-  temperatura();
-  if(temp < TEMP_LOW) {
+  float temperature = readTemperature();
+  if(temperature < TEMP_LOW) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
       circle.setPixelColor(i, circle.Color(0, 0, 255)); // Color AZUL, temperatura baja
     }
     circle.show(); // Mostrar los cambios en los LEDs
-  } else if (temp >= TEMP_LOW && temp < TEMP_MEDIUM) {
+  } else if (temperature >= TEMP_LOW && temperature < TEMP_MEDIUM) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
       circle.setPixelColor(i, circle.Color(0, 255, 0)); // Color VERDE, temperatura ambiente 
     }
     circle.show(); // Mostrar los cambios en los LEDs
-  } else if (temp >= TEMP_MEDIUM && temp <= TEMP_HIGH) {
+  } else if (temperature >= TEMP_MEDIUM && temperature <= TEMP_HIGH) {
     for (int i = 0; i < NUM_CIRCLE_LEDS; i++) {
       circle.setPixelColor(i, circle.Color(255, 0, 0)); // Color ROJO, temperatura alta 
     }
